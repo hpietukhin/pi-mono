@@ -87,6 +87,7 @@ Modifier combinations: `ctrl+shift+x`, `alt+ctrl+x`, `ctrl+shift+alt+x`, `ctrl+1
 | `app.exit` | `ctrl+d` | Exit (when editor empty) |
 | `app.suspend` | `ctrl+z` | Suspend to background |
 | `app.editor.external` | `ctrl+g` | Open in external editor (`$VISUAL` or `$EDITOR`) |
+| `app.clipboard.copyPrompt` | `ctrl+q` | Copy current prompt to clipboard |
 | `app.clipboard.pasteImage` | `ctrl+v` (`alt+v` on Windows) | Paste image from clipboard |
 
 ### Sessions

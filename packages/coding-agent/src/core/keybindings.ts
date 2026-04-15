@@ -23,6 +23,7 @@ export interface AppKeybindings {
 	"app.thinking.toggle": true;
 	"app.session.toggleNamedFilter": true;
 	"app.editor.external": true;
+	"app.clipboard.copyPrompt": true;
 	"app.message.followUp": true;
 	"app.message.dequeue": true;
 	"app.clipboard.pasteImage": true;
@@ -78,6 +79,10 @@ export const KEYBINDINGS = {
 	"app.editor.external": {
 		defaultKeys: "ctrl+g",
 		description: "Open external editor",
+	},
+	"app.clipboard.copyPrompt": {
+		defaultKeys: "ctrl+q",
+		description: "Copy current prompt to clipboard",
 	},
 	"app.message.followUp": {
 		defaultKeys: "alt+enter",

@@ -216,6 +216,7 @@ export class InteractiveMode {
 
 	// Track if editor is in bash mode (text starts with !)
 	private isBashMode = false;
+	private copyingPrompt = false;
 
 	// Track current bash execution component
 	private bashComponent: BashExecutionComponent | undefined = undefined;
@@ -511,6 +512,7 @@ export class InteractiveMode {
 				hint("app.tools.expand", "to expand tools"),
 				hint("app.thinking.toggle", "to expand thinking"),
 				hint("app.editor.external", "for external editor"),
+				hint("app.clipboard.copyPrompt", "to copy prompt"),
 				rawKeyHint("/", "for commands"),
 				rawKeyHint("!", "to run bash"),
 				rawKeyHint("!!", "to run bash (no context)"),
@@ -2102,6 +2104,9 @@ export class InteractiveMode {
 		this.defaultEditor.onAction("app.tools.expand", () => this.toggleToolOutputExpansion());
 		this.defaultEditor.onAction("app.thinking.toggle", () => this.toggleThinkingBlockVisibility());
 		this.defaultEditor.onAction("app.editor.external", () => this.openExternalEditor());
+		this.defaultEditor.onAction("app.clipboard.copyPrompt", () => {
+			void this.handleCopyPromptCommand();
+		});
 		this.defaultEditor.onAction("app.message.followUp", () => this.handleFollowUp());
 		this.defaultEditor.onAction("app.message.dequeue", () => this.handleDequeue());
 		this.defaultEditor.onAction("app.session.new", () => this.handleClearCommand());
@@ -4357,6 +4362,23 @@ export class InteractiveMode {
 		}
 	}
 
+	private async handleCopyPromptCommand(): Promise<void> {
+		if (this.copyingPrompt) return;
+		const text = this.editor.getExpandedText?.() ?? this.editor.getText();
+		if (!text.trim()) {
+			return;
+		}
+		this.copyingPrompt = true;
+		try {
+			await copyToClipboard(text);
+			this.showStatus("Copied current prompt to clipboard");
+		} catch (error) {
+			this.showError(error instanceof Error ? error.message : String(error));
+		} finally {
+			this.copyingPrompt = false;
+		}
+	}
+
 	private handleNameCommand(text: string): void {
 		const name = text.replace(/^\/name\s*/, "").trim();
 		if (!name) {
@@ -4503,6 +4525,7 @@ export class InteractiveMode {
 		const expandTools = this.getAppKeyDisplay("app.tools.expand");
 		const toggleThinking = this.getAppKeyDisplay("app.thinking.toggle");
 		const externalEditor = this.getAppKeyDisplay("app.editor.external");
+		const copyPrompt = this.getAppKeyDisplay("app.clipboard.copyPrompt");
 		const cycleModelBackward = this.getAppKeyDisplay("app.model.cycleBackward");
 		const followUp = this.getAppKeyDisplay("app.message.followUp");
 		const dequeue = this.getAppKeyDisplay("app.message.dequeue");
@@ -4547,6 +4570,7 @@ export class InteractiveMode {
 | \`${expandTools}\` | Toggle tool output expansion |
 | \`${toggleThinking}\` | Toggle thinking block visibility |
 | \`${externalEditor}\` | Edit message in external editor |
+| \`${copyPrompt}\` | Copy current prompt to clipboard |
 | \`${followUp}\` | Queue follow-up message |
 | \`${dequeue}\` | Restore queued messages |
 | \`${pasteImage}\` | Paste image from clipboard |
